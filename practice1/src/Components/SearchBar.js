@@ -1,22 +1,24 @@
-import React, { useRef, useState } from "react";
+import axios from "axios";
+import React, { useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { FetchData } from "../redux/SearchSlice";
 
 export default function SearchBar() {
   const [input, setInput] = useState("");
-  const [filteredData, setFilteredData] = useState([]);
-  const data = ["pencil", "laptop", "mobile", "water", "coffee"];
   const inputElement = useRef();
+  const { data, loading } = useSelector((state) => state.Search);
+  const Dispatch = useDispatch();
+  useEffect(() => {
+    Dispatch(FetchData());
+  }, []);
+
+  console.log(data);
   function handleSearch(event) {
     setInput(event.target.value);
-    const filter = data.filter((value) =>
-      value.toLowerCase().includes(input.toLowerCase())
-    );
-    setFilteredData(filter);
-    console.log(filteredData);
   }
-  function handleSetInput(item) {
-    setInput(item);
-    setFilteredData([]);
-  }
+  const filteredData = data.filter((value) =>
+    value.title.toLowerCase().includes(input.toLowerCase())
+  );
 
   return (
     <div>
@@ -25,12 +27,17 @@ export default function SearchBar() {
         value={input}
         onChange={(e) => handleSearch(e)}
       />
-      {filteredData?.length > 0 &&
+      {loading ? (
+        <h1>Loading</h1>
+      ) : filteredData?.length > 0 ? (
         filteredData.map((item, index) => (
-          <div style={{padding:'10px 10px',cursor:'pointer' }} onClick={() => handleSetInput(item)} key={index}>
-            {item}
+          <div style={{ padding: "10px 10px", cursor: "pointer" }} key={index}>
+            {item.title}
           </div>
-        ))}
+        ))
+      ) : (
+        <h1>No founds</h1>
+      )}
     </div>
   );
 }

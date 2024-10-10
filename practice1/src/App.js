@@ -9,8 +9,9 @@ function App() {
   return (
     <div >
       <Provider store={Store}>
-      <Todo/>
+      <SearchBar/>
       </Provider>
+      
     </div>
   );
 }
